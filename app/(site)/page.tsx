@@ -1,6 +1,12 @@
 import Link from "next/link";
 import Icone, { type NomIcone } from "@/components/Icone";
-import AvantApres from "@/components/galerie/AvantApres";
+import HeroRaclette from "@/components/motion/HeroRaclette";
+import TitreAnime from "@/components/motion/TitreAnime";
+import Compteur from "@/components/motion/Compteur";
+import BandeauDefilant from "@/components/motion/BandeauDefilant";
+import EtapesProgression from "@/components/motion/EtapesProgression";
+import Bento from "@/components/motion/Bento";
+import { Apparait, Cascade, ElementCascade } from "@/components/motion/Apparait";
 import { lireAvisVisibles, lireGalerie } from "@/lib/donnees";
 
 export const revalidate = 300;
@@ -21,6 +27,18 @@ const ETAPES = [
   { titre: "Devis et intervention", texte: "Le devis détaillé et la suite se règlent directement par e-mail." },
 ];
 
+const ZONES = [
+  "Sceaux",
+  "Mairies & écoles",
+  "Roissy-en-Brie",
+  "Vitrerie en hauteur",
+  "Émerainville",
+  "Salons & instituts",
+  "Île-de-France",
+  "Façades en pierre",
+  "Bureaux & commerces",
+];
+
 function initiales(nom: string): string {
   return nom
     .split(/\s+/)
@@ -34,126 +52,117 @@ export default async function Accueil() {
 
   return (
     <>
-      <section className="section-tight">
-        <div className="container">
-          <div className="grid grid-2 hero-grille">
-            <div className="reveal">
+      <section className="hero">
+        <span className="hero-halo" aria-hidden="true" />
+        <div className="container hero-grille">
+          <div className="hero-texte">
+            <Apparait>
               <span className="eyebrow">Nettoyage professionnel — Île-de-France</span>
-              <h1 style={{ marginTop: "1rem" }}>Des locaux impeccables, visibles avant même votre visite.</h1>
-              <p className="lede" style={{ marginTop: "1.3rem" }}>
-                Bureaux, commerces, copropriétés, mairies et écoles : je prends en charge le nettoyage de vos espaces, avec une prise de rendez-vous en ligne et un suivi par e-mail.
+            </Apparait>
+            <TitreAnime texte="Des locaux impeccables, visibles avant même votre visite." surligne="impeccables" className="hero-titre" delai={0.15} />
+            <Apparait delai={0.55}>
+              <p className="lede">
+                Bureaux, commerces, mairies, écoles, vitrerie en hauteur : je prends en charge le nettoyage de vos espaces, avec un rendez-vous réservé en ligne et un suivi par e-mail.
               </p>
-              <div className="flex gap-md" style={{ marginTop: "2rem", flexWrap: "wrap" }}>
-                <Link href="/devis" className="btn btn-primary">
-                  Réserver un créneau <Icone nom="arrow-right" taille={17} />
-                </Link>
-                <Link href="/galerie" className="btn btn-outline">
-                  Voir la galerie
-                </Link>
-              </div>
-              <div className="flex items-center gap-sm hero-garantie">
-                <Icone nom="shield-check" taille={17} />
-                Devis sans engagement · Réponse sous 24 à 48h
-              </div>
-            </div>
-            <div className="reveal hero-photo-wrap">
-              <div className="hero-photo">
-                <img src="/images/hero-mairie.jpg" alt="Façade de la mairie de Sceaux entretenue par JC Habitat Solutions" />
-              </div>
-              <div className="hero-photo-tag">
-                <strong>Mairie de Sceaux</strong>
-                <span>Entretien de façade &amp; extérieurs</span>
-              </div>
-            </div>
+            </Apparait>
+            <Apparait delai={0.7} className="hero-actions">
+              <Link href="/devis" className="btn btn-primary btn-grand">
+                Réserver un créneau <Icone nom="arrow-right" taille={17} />
+              </Link>
+              <Link href="/galerie" className="btn btn-outline btn-grand">
+                Voir les chantiers
+              </Link>
+            </Apparait>
+            <Apparait delai={0.85} className="hero-garantie">
+              <Icone nom="shield-check" taille={17} />
+              Devis sans engagement · aucune donnée bancaire
+            </Apparait>
           </div>
+          <HeroRaclette image="/images/hero-mairie.jpg" legende="Mairie de Sceaux" sousLegende="Façade & extérieurs" />
         </div>
       </section>
 
-      <div className="stat-strip">
-        <div className="stat"><span className="num">2 684 m²</span><span className="label">nettoyés en une seule intervention (école)</span></div>
-        <div className="stat"><span className="num">Pro &amp; collectivités</span><span className="label">bureaux, commerces, mairies, écoles</span></div>
-        <div className="stat"><span className="num">&lt; 48h</span><span className="label">délai de réponse à un devis</span></div>
-      </div>
+      <BandeauDefilant elements={ZONES} />
+
+      <section className="section-chiffres">
+        <div className="container">
+          <Cascade className="chiffres">
+            <ElementCascade className="chiffre">
+              <span className="chiffre-valeur"><Compteur valeur={2684} suffixe=" m²" /></span>
+              <span className="chiffre-libelle">nettoyés en une seule intervention, dans une école</span>
+            </ElementCascade>
+            <ElementCascade className="chiffre">
+              <span className="chiffre-valeur"><Compteur valeur={48} prefixe="< " suffixe=" h" duree={1.2} /></span>
+              <span className="chiffre-libelle">pour recevoir une réponse à votre demande</span>
+            </ElementCascade>
+            <ElementCascade className="chiffre">
+              <span className="chiffre-valeur"><Compteur valeur={6} duree={1} /></span>
+              <span className="chiffre-libelle">types d&apos;espaces : bureaux, collectivités, salons, vitrerie, façades, domicile</span>
+            </ElementCascade>
+          </Cascade>
+        </div>
+      </section>
 
       <section id="services">
         <div className="container">
-          <div className="section-head reveal">
-            <span className="eyebrow">Mes prestations</span>
-            <h2>Un service pour chaque type d&apos;espace</h2>
-            <p className="lede">Fréquence, périmètre et exigences : chaque prestation est cadrée dès la demande de devis.</p>
+          <div className="section-head">
+            <Apparait><span className="eyebrow">Mes prestations</span></Apparait>
+            <TitreAnime niveau="h2" texte="Un service pour chaque type d'espace" auChargement={false} />
+            <Apparait delai={0.2}>
+              <p className="lede">Fréquence, périmètre et exigences : chaque prestation est cadrée dès la demande de devis.</p>
+            </Apparait>
           </div>
-          <div className="grid grid-3">
+          <Cascade className="grid grid-3 services-grille">
             {SERVICES.map((service) => (
-              <div key={service.titre} className="card service-card reveal">
+              <ElementCascade key={service.titre} className="card service-card">
                 <span className="icon"><Icone nom={service.icone} taille={24} /></span>
                 <h3>{service.titre}</h3>
                 <p>{service.texte}</p>
-              </div>
+                <span className="service-reflet" aria-hidden="true" />
+              </ElementCascade>
             ))}
-          </div>
+          </Cascade>
         </div>
       </section>
 
-      <section id="realisations" className="section-surface">
+      <section id="realisations" className="section-sombre">
         <div className="container">
-          <div className="section-head-ligne reveal">
+          <div className="section-head-ligne">
             <div className="section-head">
-              <span className="eyebrow">Mes réalisations</span>
-              <h2>Des interventions récentes, en photo</h2>
-              <p className="lede">Un aperçu des derniers chantiers — retrouvez-les tous dans la galerie.</p>
+              <Apparait><span className="eyebrow eyebrow-clair">Mes réalisations</span></Apparait>
+              <TitreAnime niveau="h2" texte="Des chantiers réels, en photo" auChargement={false} />
+              <Apparait delai={0.2}>
+                <p className="lede">Un aperçu des derniers chantiers — tous les autres sont dans la galerie.</p>
+              </Apparait>
             </div>
-            <Link href="/galerie" className="btn btn-outline">
-              Toute la galerie <Icone nom="arrow-right" taille={17} />
-            </Link>
+            <Apparait delai={0.3}>
+              <Link href="/galerie" className="btn btn-primary">
+                Toute la galerie <Icone nom="arrow-right" taille={17} />
+              </Link>
+            </Apparait>
           </div>
-          {realisations.length === 0 ? (
-            <p className="text-muted">Les premières réalisations arrivent bientôt.</p>
-          ) : (
-            <div className="grid grid-3 realisations-grille">
-              {realisations.map((r) => (
-                <div key={r.id} className="work-card reveal">
-                  <div className="thumb">
-                    {r.type === "avant_apres" && r.image_avant_url && r.image_apres_url ? (
-                      <AvantApres avant={r.image_avant_url} apres={r.image_apres_url} titre={r.titre} />
-                    ) : (
-                      <img src={r.image_url ?? ""} alt={r.titre} loading="lazy" />
-                    )}
-                  </div>
-                  <div className="meta">
-                    <span className="tag">{r.categorie}{r.lieu ? ` · ${r.lieu}` : ""}</span>
-                    <h4>{r.titre}</h4>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {realisations.length === 0 ? <p className="text-muted">Les premières réalisations arrivent bientôt.</p> : <Bento elements={realisations} />}
         </div>
       </section>
 
       <section id="etapes">
         <div className="container">
           <div className="grid grid-2 etapes-grille">
-            <div className="reveal etapes-intro">
-              <span className="eyebrow">Comment ça marche</span>
-              <h2 style={{ marginTop: "1rem" }}>De la demande à l&apos;intervention</h2>
-              <p className="lede" style={{ marginTop: "1rem" }}>
-                Un parcours volontairement simple : vous réservez un créneau en ligne, la suite se règle directement par e-mail.
-              </p>
-              <Link href="/devis" className="btn btn-primary" style={{ marginTop: "1.8rem" }}>
-                Réserver un créneau <Icone nom="arrow-right" taille={17} />
-              </Link>
+            <div className="etapes-intro">
+              <Apparait><span className="eyebrow">Comment ça marche</span></Apparait>
+              <TitreAnime niveau="h2" texte="De la demande à l'intervention" auChargement={false} className="etapes-titre" />
+              <Apparait delai={0.2}>
+                <p className="lede" style={{ marginTop: "1rem" }}>
+                  Un parcours volontairement simple : vous réservez un créneau en ligne, la suite se règle directement par e-mail.
+                </p>
+              </Apparait>
+              <Apparait delai={0.3}>
+                <Link href="/devis" className="btn btn-primary" style={{ marginTop: "1.8rem" }}>
+                  Réserver un créneau <Icone nom="arrow-right" taille={17} />
+                </Link>
+              </Apparait>
             </div>
-            <div className="steps reveal">
-              {ETAPES.map((etape) => (
-                <div key={etape.titre} className="step">
-                  <span className="idx" />
-                  <div>
-                    <h3>{etape.titre}</h3>
-                    <p>{etape.texte}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <EtapesProgression etapes={ETAPES} />
           </div>
         </div>
       </section>
@@ -161,18 +170,19 @@ export default async function Accueil() {
       {avis.length > 0 && (
         <section className="section-surface">
           <div className="container">
-            <div className="section-head reveal">
-              <span className="eyebrow">Témoignages</span>
-              <h2>Ce qu&apos;en disent mes clients</h2>
+            <div className="section-head">
+              <Apparait><span className="eyebrow">Témoignages</span></Apparait>
+              <TitreAnime niveau="h2" texte="Ce qu'en disent mes clients" auChargement={false} />
             </div>
-            <div className="grid grid-3">
+            <Cascade className="grid grid-3" intervalle={0.12}>
               {avis.map((a) => (
-                <div key={a.id} className="quote-card reveal">
+                <ElementCascade key={a.id} className="quote-card">
+                  <span className="quote-guillemet" aria-hidden="true">“</span>
                   <div className="etoiles" aria-label={`${a.note} sur 5`}>
                     {"★".repeat(a.note)}
                     <span className="etoiles-vides">{"★".repeat(5 - a.note)}</span>
                   </div>
-                  <p>« {a.texte} »</p>
+                  <p>{a.texte}</p>
                   <div className="who">
                     <span className="avatar">{initiales(a.nom_client)}</span>
                     <span>
@@ -180,24 +190,25 @@ export default async function Accueil() {
                       {a.fonction && <small>{a.fonction}</small>}
                     </span>
                   </div>
-                </div>
+                </ElementCascade>
               ))}
-            </div>
+            </Cascade>
           </div>
         </section>
       )}
 
       <section>
         <div className="container">
-          <div className="cta-band reveal">
+          <Apparait className="cta-band">
+            <span className="cta-reflet" aria-hidden="true" />
             <div>
               <h2>Besoin d&apos;un devis rapide et sans engagement ?</h2>
               <p>Choisissez un créneau dans le planning en moins de deux minutes. Réponse sous 24 à 48h.</p>
             </div>
-            <Link href="/devis" className="btn btn-dark">
+            <Link href="/devis" className="btn btn-dark btn-grand">
               Réserver un créneau <Icone nom="arrow-right" taille={17} />
             </Link>
-          </div>
+          </Apparait>
         </div>
       </section>
     </>

@@ -4,6 +4,7 @@ import { frFR } from "@clerk/localizations";
 import "./globals.css";
 import "./site.css";
 import "./admin.css";
+import "./motion.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),

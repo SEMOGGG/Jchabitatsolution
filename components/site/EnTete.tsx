@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "motion/react";
 import Icone from "@/components/Icone";
 
 const LIENS = [
@@ -16,13 +17,17 @@ const LIENS = [
 export default function EnTete() {
   const chemin = usePathname();
   const [ouvert, setOuvert] = useState(false);
+  const [defile, setDefile] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (y) => setDefile(y > 12));
 
   useEffect(() => {
     setOuvert(false);
   }, [chemin]);
 
   return (
-    <header className="site-header">
+    <header className={`site-header${defile ? " defile" : ""}`}>
       <div className="container nav">
         <Link href="/" className="brand">
           <span className="brand-mark">
@@ -32,18 +37,15 @@ export default function EnTete() {
             JC Habitat Solutions<small>Nettoyage professionnel</small>
           </span>
         </Link>
-        <nav className={`nav-links${ouvert ? " is-open" : ""}`} aria-label="Navigation principale">
+        <nav className="nav-links" aria-label="Navigation principale">
           {LIENS.map((lien) => (
             <Link key={lien.href} href={lien.href} className={chemin === lien.href ? "active" : ""}>
               {lien.libelle}
             </Link>
           ))}
-          <Link href="/devis" className="btn btn-primary btn-sm nav-cta-mobile">
-            Demander un devis
-          </Link>
         </nav>
         <div className="nav-actions">
-          <Link href="/devis" className="btn btn-primary btn-sm">
+          <Link href="/devis" className="btn btn-primary btn-sm nav-cta">
             Demander un devis
           </Link>
           <button
@@ -57,6 +59,40 @@ export default function EnTete() {
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {ouvert && (
+          <motion.nav
+            className="menu-mobile"
+            aria-label="Navigation mobile"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              className="menu-mobile-liens"
+              initial="cache"
+              animate="visible"
+              variants={{ cache: {}, visible: { transition: { staggerChildren: 0.05, delayChildren: 0.08 } } }}
+            >
+              {LIENS.map((lien) => (
+                <motion.div key={lien.href} variants={{ cache: { opacity: 0, x: -16 }, visible: { opacity: 1, x: 0 } }}>
+                  <Link href={lien.href} onClick={() => setOuvert(false)}>
+                    {lien.libelle}
+                    <Icone nom="arrow-right" taille={16} />
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div variants={{ cache: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}>
+                <Link href="/devis" className="btn btn-primary btn-block" onClick={() => setOuvert(false)}>
+                  Demander un devis
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

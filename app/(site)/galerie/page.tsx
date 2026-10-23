@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Icone from "@/components/Icone";
 import GrilleGalerie from "@/components/galerie/GrilleGalerie";
+import TitreAnime from "@/components/motion/TitreAnime";
+import { Apparait } from "@/components/motion/Apparait";
 import { lireGalerie } from "@/lib/donnees";
 
 export const revalidate = 300;
@@ -18,13 +20,16 @@ export default async function PageGalerie() {
   return (
     <>
       <section className="page-hero">
+        <span className="hero-halo" aria-hidden="true" />
         <div className="container">
-          <span className="eyebrow">Galerie</span>
-          <h1 className="h2" style={{ marginTop: ".8rem" }}>Chantiers, nettoyages et avant / après</h1>
-          <p className="lede" style={{ marginTop: ".8rem" }}>
-            {elements.length} photo{elements.length > 1 ? "s" : ""} de chantiers réels
-            {nombreAvantApres > 0 ? `, dont ${nombreAvantApres} comparatif${nombreAvantApres > 1 ? "s" : ""} avant / après à faire glisser` : ""}.
-          </p>
+          <Apparait><span className="eyebrow">Galerie</span></Apparait>
+          <TitreAnime texte="Chantiers, nettoyages et avant / après" surligne="avant" className="h2 page-hero-titre" />
+          <Apparait delai={0.35}>
+            <p className="lede" style={{ marginTop: ".8rem" }}>
+              {elements.length} photo{elements.length > 1 ? "s" : ""} de chantiers réels
+              {nombreAvantApres > 0 ? `, dont ${nombreAvantApres} comparatif${nombreAvantApres > 1 ? "s" : ""} avant / après à faire glisser` : ""}.
+            </p>
+          </Apparait>
         </div>
       </section>
 
@@ -36,7 +41,8 @@ export default async function PageGalerie() {
 
       <section className="section-tight">
         <div className="container">
-          <div className="cta-band">
+          <Apparait className="cta-band">
+            <span className="cta-reflet" aria-hidden="true" />
             <div>
               <h2>Un chantier similaire à prévoir ?</h2>
               <p>Réservez un créneau et joignez une photo : c&apos;est le plus rapide pour obtenir un devis précis.</p>
@@ -44,7 +50,7 @@ export default async function PageGalerie() {
             <Link href="/devis" className="btn btn-dark">
               Demander un devis <Icone nom="arrow-right" taille={17} />
             </Link>
-          </div>
+          </Apparait>
         </div>
       </section>
     </>

@@ -19,23 +19,7 @@
 
 .text-muted{ color: var(--muted); }
 
-/* -------------------- Navigation mobile -------------------- */
-.nav-cta-mobile{ display: none; }
-@media (max-width: 900px){
-  .nav-links.is-open{
-    display: flex;
-    position: absolute; top: 100%; left: 0; right: 0;
-    flex-direction: column; align-items: stretch; gap: 0;
-    background: var(--surface);
-    border-bottom: 1px solid var(--line);
-    box-shadow: var(--shadow-md);
-    padding: .6rem var(--pad-inline) 1.2rem;
-  }
-  .nav-links.is-open a{ padding: .9rem 0; border-bottom: 1px solid var(--line-soft); }
-  .nav-links.is-open a::after{ display: none; }
-  .nav-links.is-open .nav-cta-mobile{ display: inline-flex; margin-top: 1rem; border-bottom: none; color: var(--accent-ink); }
-  .nav-actions .btn-primary{ display: none; }
-}
+/* -------------------- Navigation mobile : voir motion.css -------------------- */
 
 /* -------------------- Accueil -------------------- */
 .hero-grille{ align-items: center; gap: 3rem; }

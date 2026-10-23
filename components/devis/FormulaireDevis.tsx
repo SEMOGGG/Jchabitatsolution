@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import Icone from "@/components/Icone";
 import { compresserImage } from "@/lib/image-client";
@@ -34,6 +35,7 @@ export default function FormulaireDevis() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [apercu, setApercu] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "erreur" | "info"; texte: string } | null>(null);
+  const [etapes, setEtapes] = useState({ projet: false, coordonnees: false });
   const [envoiEnCours, demarrerEnvoi] = useTransition();
   const champPhoto = useRef<HTMLInputElement>(null);
   const derniereMaj = useRef<Date | null>(null);
@@ -141,11 +143,23 @@ export default function FormulaireDevis() {
   }
 
   return (
-    <form className="devis-formulaire" onSubmit={envoyer} noValidate={false}>
+    <form
+      className="devis-formulaire"
+      onSubmit={envoyer}
+      noValidate={false}
+      onChange={(e) => {
+        const f = e.currentTarget;
+        const valeur = (nom: string) => ((f.elements.namedItem(nom) as HTMLInputElement | null)?.value ?? "").trim();
+        setEtapes({
+          projet: valeur("nature_projet") !== "",
+          coordonnees: valeur("prenom") !== "" && valeur("nom") !== "" && /\S+@\S+\.\S+/.test(valeur("email")),
+        });
+      }}
+    >
       <div className="devis-colonne">
         <div className="panel devis-bloc" id="planning">
           <div className="panel-head">
-            <h2><span className="devis-numero">1</span> Choisissez un créneau</h2>
+            <h2><NumeroEtape numero={1} fait={Boolean(creneau) || sansCreneau || planningVide} /> Choisissez un créneau</h2>
             <button type="button" className="btn btn-ghost btn-sm" onClick={chargerCreneaux} title="Actualiser le planning">
               <span>Actualiser</span>
             </button>
@@ -206,19 +220,27 @@ export default function FormulaireDevis() {
                 {jourChoisi && !sansCreneau && (
                   <div className="creneaux">
                     <p className="creneaux-titre">{formatLong.format(dateUtc(jourChoisi))}</p>
-                    <div className="creneaux-grille">
+                    <motion.div
+                      key={jourChoisi}
+                      className="creneaux-grille"
+                      initial="cache"
+                      animate="visible"
+                      variants={{ cache: {}, visible: { transition: { staggerChildren: 0.035 } } }}
+                    >
                       {creneauxDuJour.map((c) => (
-                        <button
+                        <motion.button
                           key={c.debut}
                           type="button"
                           className={`creneau${creneau === c.debut ? " active" : ""}`}
                           onClick={() => setCreneau(c.debut)}
                           aria-pressed={creneau === c.debut}
+                          variants={{ cache: { opacity: 0, y: 10, scale: 0.92 }, visible: { opacity: 1, y: 0, scale: 1 } }}
+                          whileTap={{ scale: 0.94 }}
                         >
                           {formatHeure.format(new Date(c.debut))}
-                        </button>
+                        </motion.button>
                       ))}
-                    </div>
+                    </motion.div>
                   </div>
                 )}
               </>
@@ -239,7 +261,7 @@ export default function FormulaireDevis() {
 
         <div className="panel devis-bloc">
           <div className="panel-head">
-            <h2><span className="devis-numero">2</span> Votre projet</h2>
+            <h2><NumeroEtape numero={2} fait={etapes.projet} /> Votre projet</h2>
           </div>
           <div className="devis-bloc-corps">
             <div className="field">
@@ -292,7 +314,7 @@ export default function FormulaireDevis() {
 
         <div className="panel devis-bloc">
           <div className="panel-head">
-            <h2><span className="devis-numero">3</span> Vos coordonnées</h2>
+            <h2><NumeroEtape numero={3} fait={etapes.coordonnees} /> Vos coordonnées</h2>
           </div>
           <div className="devis-bloc-corps">
             <div className="field-row">
@@ -333,20 +355,22 @@ export default function FormulaireDevis() {
               <Icone nom="calendar" />
               <div>
                 <span className="recap-libelle">Rendez-vous</span>
-                <strong>
-                  {sansCreneau || planningVide
-                    ? "À convenir par e-mail"
-                    : creneau
-                      ? `${formatLong.format(new Date(creneau))} à ${formatHeure.format(new Date(creneau))}`
-                      : "Aucun créneau choisi"}
-                </strong>
+                <TexteAnime
+                  texte={
+                    sansCreneau || planningVide
+                      ? "À convenir par e-mail"
+                      : creneau
+                        ? `${formatLong.format(new Date(creneau))} à ${formatHeure.format(new Date(creneau))}`
+                        : "Aucun créneau choisi"
+                  }
+                />
               </div>
             </div>
             <div className="recap-ligne">
               <Icone nom="camera" />
               <div>
                 <span className="recap-libelle">Photo</span>
-                <strong>{photo ? "1 photo jointe" : "Aucune"}</strong>
+                <TexteAnime texte={photo ? "1 photo jointe" : "Aucune"} />
               </div>
             </div>
 
@@ -366,5 +390,41 @@ export default function FormulaireDevis() {
         </div>
       </aside>
     </form>
+  );
+}
+
+function NumeroEtape({ numero, fait }: { numero: number; fait: boolean }) {
+  return (
+    <span className={`devis-numero${fait ? " fait" : ""}`} aria-label={fait ? `Étape ${numero} complétée` : `Étape ${numero}`}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={fait ? "fait" : "numero"}
+          initial={{ scale: 0.4, opacity: 0, rotate: -30 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          exit={{ scale: 0.4, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 500, damping: 26 }}
+          style={{ display: "inline-flex" }}
+        >
+          {fait ? <Icone nom="check" taille={14} /> : numero}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+function TexteAnime({ texte }: { texte: string }) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.strong
+        key={texte}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.2 }}
+        style={{ display: "block" }}
+      >
+        {texte}
+      </motion.strong>
+    </AnimatePresence>
   );
 }

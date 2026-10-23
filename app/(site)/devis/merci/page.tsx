@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Icone from "@/components/Icone";
+import CocheAnimee from "@/components/motion/CocheAnimee";
 import { formatCreneau } from "@/lib/temps";
 
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export default async function PageMerci({ searchParams }: { searchParams: Promis
     <section>
       <div className="container">
         <div className="merci">
-          <span className="merci-icone"><Icone nom="check" taille={30} /></span>
+          <CocheAnimee />
           <h1 className="h2">Demande bien envoyée</h1>
           {creneauValide ? (
             <p className="lede">
